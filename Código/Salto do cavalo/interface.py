@@ -100,4 +100,4 @@ class SaltoDoCavaloInterface:
 				self.selectedPiece = None
 				self.selectedImage = None
 
-ActorPlayer()
+SaltoDoCavaloInterface()
