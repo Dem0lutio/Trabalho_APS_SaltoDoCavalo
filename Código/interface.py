@@ -7,10 +7,10 @@ class SaltoDoCavaloInterface:
 		self.mainWindow.iconbitmap("images/icon.ico")
 		self.mainWindow.geometry("675x720")
 		self.mainWindow.resizable(False, False)
-		self.mainWindow["bg"] = "gray"
+		self.mainWindow["bg"] = "green"
 
-		self.mainFrame = Frame(self.mainWindow, padx=75, pady=45, bg="gray")
-		self.messageFrame = Frame(self.mainWindow, padx=4, pady=1, bg="gray")
+		self.mainFrame = Frame(self.mainWindow, padx=75, pady=45, bg="green")
+		self.messageFrame = Frame(self.mainWindow, padx=4, pady=1, bg="green")
 
 		# Imagens
 		self.imagemVerde = PhotoImage(file="images/verde.png")
@@ -38,7 +38,7 @@ class SaltoDoCavaloInterface:
 		self.boardView[0][0].config(image=self.imagemCavaloPreto)
 
 		# Mensagem de estado
-		self.labelMessage = Label(self.messageFrame, bg="gray", text='Vez do Branco', font="arial 14")
+		self.labelMessage = Label(self.messageFrame, bg="green", text='Vez do Branco', font="arial 14")
 		self.labelMessage.grid(row=0, column=0, columnspan=3)
 		self.mainFrame.grid(row=0, column=0)
 		self.messageFrame.grid(row=1, column=0)
