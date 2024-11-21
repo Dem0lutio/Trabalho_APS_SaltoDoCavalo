@@ -3,7 +3,7 @@ class Posicao():
 
         self._x = x
         self._y = y
-        self._blocked = False if ((x == 4 and y == 4) or (x == 0 and y == 0)) else True
+        self._blocked = True if ((x == 4 and y == 4) or (x == 0 and y == 0)) else False
 
         @property
         def x(self) -> int:
