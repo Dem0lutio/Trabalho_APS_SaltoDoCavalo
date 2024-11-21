@@ -29,8 +29,15 @@ class Posicao():
         def blocked(self, blocked: bool) -> None:
             self._blocked = blocked
 
+        def position_reachable(self, current_position: Posicao, target_position: Posicao) -> bool:
+            """
+                Retorna se é possível o jogador se movimentar para a posição selecionada.
 
-        def position_reachable(self, current_position, target_position):
+                :param current_position: Posição atual do jogador no tabuleiro.
+                :param target_position: Posição destino selecionada pelo jogador.
+                :return: Booleano indicando se a posição é alcançável.
+            """
+
             dx = abs(current_position.x - target_position.x)
             dy = abs(current_position.y - target_position.y)
 
