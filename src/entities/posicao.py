@@ -3,7 +3,7 @@ class Posicao():
 
         self._x = x
         self._y = y
-        self._blocked = True if ((x == 4 and y == 4) or (x == 0 and y == 0)) else False
+        self._bloqueada = True if ((x == 4 and y == 4) or (x == 0 and y == 0)) else False
 
         @property
         def x(self) -> int:
@@ -22,26 +22,26 @@ class Posicao():
             self._y = y
 
         @property
-        def blocked(self) -> bool:
-            return self._blocked
+        def bloqueada(self) -> bool:
+            return self._bloqueada
 
-        @blocked.setter
-        def blocked(self, blocked: bool) -> None:
-            self._blocked = blocked
+        @bloqueada.setter
+        def bloqueada(self, bloqueada: bool) -> None:
+            self._bloqueada = bloqueada
 
-        def position_reachable(self, current_position: Posicao, target_position: Posicao) -> bool:
+        def posicao_alcancavel(self, posicao_atual: Posicao, posicao_destino: Posicao) -> bool:
             """
                 Retorna se é possível o jogador se movimentar para a posição selecionada.
 
-                :param current_position: Posição atual do jogador no tabuleiro.
-                :param target_position: Posição destino selecionada pelo jogador.
+                :param posicao_atual: Posição atual do jogador no tabuleiro.
+                :param posicao_destino: Posição destino selecionada pelo jogador.
                 :return: Booleano indicando se a posição é alcançável.
             """
 
-            dx = abs(current_position.x - target_position.x)
-            dy = abs(current_position.y - target_position.y)
+            dx = abs(posicao_atual.x - posicao_destino.x)
+            dy = abs(posicao_atual.y - posicao_destino.y)
 
-            if target_position.blocked:
+            if posicao_destino.bloqueada:
                 return False
 
             return (dx == 2 and dy == 1) or (dx == 1 and dy == 2)

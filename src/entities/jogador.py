@@ -6,7 +6,7 @@ class Jogador():
         self._nome = ''
         self._cor = ''
         self._posicao_atual = None
-        self._winner = False
+        self._vencedor = False
         self._turno = False
 
     @property
@@ -34,12 +34,12 @@ class Jogador():
         self._posicao_atual = posicao
 
     @property
-    def winner(self) -> bool:
-        return self._winner
+    def vencedor(self) -> bool:
+        return self._vencedor
 
-    @winner.setter
-    def winner(self, winner: bool) -> None:
-        self._winner = winner
+    @vencedor.setter
+    def vencedor(self, vencedor: bool) -> None:
+        self._vencedor = vencedor
 
     @property
     def turno(self) -> bool:
