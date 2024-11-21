@@ -1,110 +1,93 @@
+import os
 import tkinter as tk
+from typing import Dict
 from tkinter import PhotoImage, Frame, Label, Tk, Menu, messagebox, simpledialog
-
 from dog.dog_actor import DogActor
 from dog.dog_interface import DogPlayerInterface
 
+from entities.tabuleiro import Tabuleiro
+
+path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 class CavaloInterface(DogPlayerInterface):
     def __init__(self):
-        self.status_partida = 'NAO INICIADA'
-        self.mainWindow = Tk()
-        self.build_mainwindow()
+        self.janela_principal = Tk()
+        self.tabuleiro = Tabuleiro(self)
+        self.construir_janela_principal()
 
+        # self.tabuleiro
+        
         player_name = simpledialog.askstring(title="Identificar jogador", prompt="Digite o seu nome")
         self.dog_server_interface = DogActor()
-
+        
         message = f"{self.dog_server_interface.initialize(player_name, self)}!"
         messagebox.showinfo(title="Dog Server", message=message)
 
-        self.mainWindow.mainloop()
+        self.janela_principal.mainloop()
 
-    def build_mainwindow(self):
-        self.mainWindow.title('Salto do Cavalo')
-        self.mainWindow.iconbitmap("images/icon.ico")
+    def construir_janela_principal(self):
+        self.janela_principal.title('Salto do Cavalo')
+        self.janela_principal.iconbitmap("images/icon.ico")
         
-        self.mainWindow.geometry("675x720")
-        self.mainWindow.resizable(False, False)
-        self.mainWindow["bg"] = "green"
+        self.janela_principal.geometry("675x720")
+        self.janela_principal.resizable(False, False)
+        self.janela_principal["bg"] = "green"
 
-        self.boardFrame = Frame(self.mainWindow, padx=75, pady=45, bg="green")
-        self.messageFrame = Frame(self.mainWindow, padx=4, pady=1, bg="green")
+        self.quadro_tabuleiro = Frame(self.janela_principal, padx=75, pady=45, bg="green")
+        self.quadro_mensagem = Frame(self.janela_principal, padx=4, pady=1, bg="green")
 
-        self.imagemVerde = PhotoImage(file="images/verde.png")
-        self.imagemVermelho = PhotoImage(file="images/vermelho.png")
-        self.imagemCavaloBranco = PhotoImage(file="images/cavalo-branco.png")
-        self.imagemCavaloBrancoEscolhido = PhotoImage(file="images/cavalo-branco-escolhido.png")
-        self.imagemCavaloPreto = PhotoImage(file="images/cavalo-preto.png")
-        self.imagemCavaloPretoEscolhido = PhotoImage(file="images/cavalo-preto-escolhido.png")
+        self.imagem_verde = PhotoImage(file="images/verde.png")
+        self.imagem_vermelho = PhotoImage(file="images/vermelho.png")
+        self.imagem_cavalo_branco = PhotoImage(file="images/cavalo-branco.png")
+        self.imagem_cavalo_branco_escolhido = PhotoImage(file="images/cavalo-branco-escolhido.png")
+        self.imagem_cavalo_preto = PhotoImage(file="images/cavalo-preto.png")
+        self.imagem_cavalo_preto_escolhido = PhotoImage(file="images/cavalo-preto-escolhido.png")
 
-        self.boardView = []
-        for linha in range(5):
-            labels_linha = []
-            for coluna in range(5):
-                label = Label(self.boardFrame, bd=2, relief="solid", image=self.imagemVerde)
-                label.grid(row=linha, column=coluna)
-                label.bind("<Button-1>", lambda event, line=linha, column=coluna: self.select_destination(event, line, column))
-                labels_linha.append(label)
-            self.boardView.append(labels_linha)
+        self.label_mensagem = Label(self.quadro_mensagem, bg="green", text='Vez do Cavalo Branco', font="arial 14")
+        self.label_mensagem.grid(row=0, column=0, columnspan=3)
+        self.quadro_tabuleiro.grid(row=0, column=0)
+        self.quadro_mensagem.grid(row=1, column=0)
 
-        self.boardView[4][4].config(image=self.imagemCavaloBranco)
-        self.boardView[0][0].config(image=self.imagemCavaloPreto)
-
-        self.labelMessage = Label(self.messageFrame, bg="green", text='Vez do Branco', font="arial 14")
-        self.labelMessage.grid(row=0, column=0, columnspan=3)
-        self.boardFrame.grid(row=0, column=0)
-        self.messageFrame.grid(row=1, column=0)
-
-        self.menu = Menu(self.mainWindow)
+        self.menu = Menu(self.janela_principal)
         self.menu.option_add("*tearOff", tk.FALSE)
-        self.mainWindow["menu"] = self.menu
+        self.janela_principal["menu"] = self.menu
 
         self.menuOptions = Menu(self.menu, bg="#FFFFFF")
         self.menu.add_cascade(menu=self.menuOptions, label="Menu")
-        self.menuOptions.add_command(label="Iniciar partida", command=self.start_match, activebackground="#C5CDE7", activeforeground="#000")
+        self.menuOptions.add_command(label="Iniciar partida", command=self.iniciar_partida, activebackground="#C5CDE7", activeforeground="#000")
         self.menuOptions.add_command(label="Sair", command=exit, activebackground="#C5CDE7", activeforeground="#000")
 
-        self.selectedPiece = None
-        self.selectedImage = None
+        self.labels_tabuleiro = []
+        for linha in range(5):
+            labels_linha = []
+            for coluna in range(5):
+                label = Label(self.quadro_tabuleiro, bd=2, relief="solid", image=self.imagem_verde)
+                label.grid(row=linha, column=coluna)
+                label.bind("<Button-1>", lambda event, line=linha, column=coluna: self.selecionar_posicao(event, line, column))
+                labels_linha.append(label)
+            self.labels_tabuleiro.append(labels_linha)
+
+        self.labels_tabuleiro[4][4].config(image=self.imagem_cavalo_branco)
+        self.labels_tabuleiro[0][0].config(image=self.imagem_cavalo_preto)
+
+        self.peca_selecionada = None
         self.whiteTurn = True
-
-    def valid_move(self, prev_row, prev_col, curr_row, curr_col):
-        row_diff = abs(prev_row - curr_row)
-        col_diff = abs(prev_col - curr_col)
-        return (row_diff == 2 and col_diff == 1) or (row_diff == 1 and col_diff == 2)
     
-    def select_destination(self, event, linha: int, coluna: int):
-        label = self.boardView[linha][coluna]
 
-        if self.whiteTurn and label['image'] == str(self.imagemCavaloBranco):
-            self.selectedPiece = label
-            self.selectedImage = self.imagemCavaloBrancoEscolhido
-            label.config(image=self.imagemCavaloBrancoEscolhido)
-        elif not self.whiteTurn and label['image'] == str(self.imagemCavaloPreto):
-            self.selectedPiece = label
-            self.selectedImage = self.imagemCavaloPretoEscolhido
-            label.config(image=self.imagemCavaloPretoEscolhido)
-        else:
-            old_row, old_col = None, None
-            for r in range(5):
-                for c in range(5):
-                    if self.boardView[r][c] == self.selectedPiece:
-                        old_row, old_col = r, c
+    def selecionar_posicao(self, event, linha: int, coluna: int):
+        status_partida = self.tabuleiro.status_partida
 
-            if label['image'] == str(self.imagemVerde) and self.valid_move(old_row, old_col, linha, coluna):
-                if self.whiteTurn:
-                    label.config(image=self.imagemCavaloBranco)
-                else:
-                    label.config(image=self.imagemCavaloPreto)
+        if (status_partida == 'AGUARDANDO SELECAO CAVALO' or status_partida == 'AGUARDANDO SELECAO DESTINO'):
+            
+            movimento = self.tabuleiro.selecionar_posicao(linha, coluna)
 
-                self.selectedPiece.config(image=self.imagemVermelho)
-                self.whiteTurn = not self.whiteTurn
-                self.labelMessage.config(text='Vez do Preto' if not self.whiteTurn else 'Vez do Branco')
+            self.atualizar_interface()
 
-                self.selectedPiece = None
-                self.selectedImage = None
+            if movimento is not None:
+                self.dog_server_interface.send_move(movimento)
 
-    def start_match(self):
-        if self.status_partida == 'NAO INICIADA':
+    def iniciar_partida(self):
+        if self.tabuleiro.status_partida == 'PARTIDA NAO INICIADA':
             start_status = self.dog_server_interface.start_match(2)
             code = start_status.get_code()
             message = start_status.get_message()
@@ -113,14 +96,53 @@ class CavaloInterface(DogPlayerInterface):
                 messagebox.showinfo(message=message)
             elif code == "2":
                 jogadores = start_status.get_players()
-                print(jogadores)
+                self.tabuleiro.iniciar_partida(jogadores)
+
+                self.atualizar_interface()
+
                 messagebox.showinfo(message=message)
 
     def receive_start(self, start_status):
         message = start_status.get_message()
         messagebox.showinfo(message=message)
 
+        jogadores = start_status.get_players()
+        self.tabuleiro.iniciar_partida(jogadores)
+
+        self.atualizar_interface()
+
+    def receive_move(self, a_move: Dict):
+        self.tabuleiro.receber_jogada(a_move)
+
+        self.atualizar_interface()
+
     def receive_withdrawal_notification(self):
         print("Oponente desistiu da partida. Jogo encerrado.")
 
-CavaloInterface()
+    def notificacao(self, mensagem: str):
+        messagebox.showinfo(message=mensagem)
+
+    def atualizar_interface(self):
+
+        self.label_mensagem['text'] = 'Vez do Cavalo Branco' if self.tabuleiro.get_jogador_atual().cor == 'BRANCO' else 'Vez do Cavalo Preto' 
+
+        self.temp_labels_tabuleiro = []
+        for linha in range(5):
+            for coluna in range(5):
+                image = ''
+                if self.tabuleiro.posicoes[linha][coluna].bloqueada:
+                    image = 'vermelho.png'
+                else:
+                    if self.tabuleiro.posicoes[linha][coluna].ocupada == 'CAVALO BRANCO':
+                        image = 'cavalo-branco.png'
+                    if self.tabuleiro.posicoes[linha][coluna].ocupada == 'CAVALO BRANCO SELECIONADO':
+                        image = 'cavalo-branco-escolhido.png'
+                    elif self.tabuleiro.posicoes[linha][coluna].ocupada == 'CAVALO PRETO':
+                        image = 'cavalo-preto.png'
+                    elif self.tabuleiro.posicoes[linha][coluna].ocupada == 'CAVALO PRETO SELECIONADO':
+                        image = 'ccavalo-preto-escolhido.png'
+                    else:
+                        image = 'verde.png'
+
+                self.temp_labels_tabuleiro.append(PhotoImage(file=os.path.join(path, "images", image)))
+                self.labels_tabuleiro[linha][coluna]["image"] = self.temp_labels_tabuleiro[len(self.temp_labels_tabuleiro) - 1]

@@ -1,10 +1,9 @@
-from posicao import Posicao
-
 class Jogador():
-    def __init__(self):
+    def __init__(self, tabuleiro):
         
         self._nome = ''
         self._cor = ''
+        self._tabuleiro = tabuleiro
         self._posicao_atual = None
         self._vencedor = False
         self._turno = False
@@ -26,6 +25,10 @@ class Jogador():
         self._cor = cor
 
     @property
+    def tabuleiro(self) -> str:
+        return self._tabuleiro
+
+    @property
     def posicao_atual(self):
         return self._posicao_atual
 
@@ -45,6 +48,22 @@ class Jogador():
     def turno(self) -> bool:
         return self._turno
 
-    @turno.setter
-    def turno(self, turno: bool) -> None:
-        self._turno = turno
+    def trocar_turno(self) -> None:
+        self._turno = not self._turno
+
+    def movimentos_possiveis(self) -> list:
+        movimentos_possiveis = []
+        movimentos_cavalo = [(2, 1), (2, -1), (-2, 1), (-2, -1), 
+                             (1, 2), (1, -2), (-1, 2), (-1, -2)]
+
+        for dx, dy in movimentos_cavalo:
+            novo_x = self.posicao_atual.x + dx
+            novo_y = self.posicao_atual.y + dy
+
+            if 0 <= novo_x < 4 and 0 <= novo_y < 4:
+                posicao_destino = self.tabuleiro.posicoes[novo_x][novo_y]
+
+                if not posicao_destino.bloqueada:
+                    movimentos_possiveis.append(posicao_destino)
+
+        return movimentos_possiveis

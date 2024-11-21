@@ -3,6 +3,7 @@ class Posicao():
 
         self._x = x
         self._y = y
+        self._ocupada = ''
         self._bloqueada = True if ((x == 4 and y == 4) or (x == 0 and y == 0)) else False
 
         @property
@@ -28,6 +29,14 @@ class Posicao():
         @bloqueada.setter
         def bloqueada(self, bloqueada: bool) -> None:
             self._bloqueada = bloqueada
+        
+        @property
+        def ocupada(self) -> bool:
+            return self._ocupada
+
+        @ocupada.setter
+        def ocupada(self, ocupada: bool) -> None:
+            self._bloqueada = ocupada
 
         def posicao_alcancavel(self, posicao_atual: Posicao, posicao_destino: Posicao) -> bool:
             """
