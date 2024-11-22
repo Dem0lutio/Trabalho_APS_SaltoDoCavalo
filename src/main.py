@@ -1,4 +1,4 @@
-from interface.old_cavalo_interface import CavaloInterface
+from interface.cavalo_interface import CavaloInterface
 
 if __name__ == '__main__':
     CavaloInterface()

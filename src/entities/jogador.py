@@ -1,6 +1,5 @@
 class Jogador():
     def __init__(self, tabuleiro):
-        
         self._nome = ''
         self._cor = ''
         self._tabuleiro = tabuleiro
@@ -60,7 +59,7 @@ class Jogador():
             novo_x = self.posicao_atual.x + dx
             novo_y = self.posicao_atual.y + dy
 
-            if 0 <= novo_x < 4 and 0 <= novo_y < 4:
+            if 0 <= novo_x <= 4 and 0 <= novo_y <= 4:
                 posicao_destino = self.tabuleiro.posicoes[novo_x][novo_y]
 
                 if not posicao_destino.bloqueada:

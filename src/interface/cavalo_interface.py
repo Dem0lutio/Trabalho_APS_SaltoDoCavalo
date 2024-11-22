@@ -14,8 +14,6 @@ class CavaloInterface(DogPlayerInterface):
         self.janela_principal = Tk()
         self.tabuleiro = Tabuleiro(self)
         self.construir_janela_principal()
-
-        # self.tabuleiro
         
         player_name = simpledialog.askstring(title="Identificar jogador", prompt="Digite o seu nome")
         self.dog_server_interface = DogActor()
@@ -43,7 +41,7 @@ class CavaloInterface(DogPlayerInterface):
         self.imagem_cavalo_preto = PhotoImage(file="images/cavalo-preto.png")
         self.imagem_cavalo_preto_escolhido = PhotoImage(file="images/cavalo-preto-escolhido.png")
 
-        self.label_mensagem = Label(self.quadro_mensagem, bg="green", text='Vez do Cavalo Branco', font="arial 14")
+        self.label_mensagem = Label(self.quadro_mensagem, bg="green", text='Aguardando início de partida...', font="arial 14")
         self.label_mensagem.grid(row=0, column=0, columnspan=3)
         self.quadro_tabuleiro.grid(row=0, column=0)
         self.quadro_mensagem.grid(row=1, column=0)
@@ -67,18 +65,14 @@ class CavaloInterface(DogPlayerInterface):
                 labels_linha.append(label)
             self.labels_tabuleiro.append(labels_linha)
 
-        self.labels_tabuleiro[4][4].config(image=self.imagem_cavalo_branco)
-        self.labels_tabuleiro[0][0].config(image=self.imagem_cavalo_preto)
-
-        self.peca_selecionada = None
-        self.whiteTurn = True
+        self.labels_tabuleiro[4][4]['image'] = self.imagem_cavalo_branco
+        self.labels_tabuleiro[0][0]['image'] = self.imagem_cavalo_preto
     
-
     def selecionar_posicao(self, event, linha: int, coluna: int):
         status_partida = self.tabuleiro.status_partida
 
-        if (status_partida == 'AGUARDANDO SELECAO CAVALO' or status_partida == 'AGUARDANDO SELECAO DESTINO'):
-            
+        if (status_partida == 'AGUARDANDO SELECAO DO CAVALO' or status_partida == 'AGUARDANDO SELECAO DESTINO'):
+
             movimento = self.tabuleiro.selecionar_posicao(linha, coluna)
 
             self.atualizar_interface()
@@ -87,7 +81,7 @@ class CavaloInterface(DogPlayerInterface):
                 self.dog_server_interface.send_move(movimento)
 
     def iniciar_partida(self):
-        if self.tabuleiro.status_partida == 'PARTIDA NAO INICIADA':
+        if self.tabuleiro.status_partida in ('PARTIDA NAO INICIADA', 'PARTIDA FINALIZADA'):
             start_status = self.dog_server_interface.start_match(2)
             code = start_status.get_code()
             message = start_status.get_message()
@@ -123,26 +117,29 @@ class CavaloInterface(DogPlayerInterface):
         messagebox.showinfo(message=mensagem)
 
     def atualizar_interface(self):
-
-        self.label_mensagem['text'] = 'Vez do Cavalo Branco' if self.tabuleiro.get_jogador_atual().cor == 'BRANCO' else 'Vez do Cavalo Preto' 
+        if self.tabuleiro.status_partida == 'PARTIDA NAO INICIADA':
+            self.label_mensagem['text'] = 'Aguardando início de partida...'
+        elif self.tabuleiro.status_partida == 'PARTIDA FINALIZADA':
+            self.label_mensagem['text'] = 'A partida acabou.'
+        else:
+            self.label_mensagem['text'] = 'Vez do Cavalo Branco' if self.tabuleiro.get_jogador_atual().cor == 'BRANCO' else 'Vez do Cavalo Preto' 
 
         self.temp_labels_tabuleiro = []
         for linha in range(5):
             for coluna in range(5):
                 image = ''
-                if self.tabuleiro.posicoes[linha][coluna].bloqueada:
-                    image = 'vermelho.png'
+                if self.tabuleiro.posicao_ocupada(linha, coluna) == 'CAVALO BRANCO':
+                    image = self.imagem_cavalo_branco
+                elif self.tabuleiro.posicao_ocupada(linha, coluna) == 'CAVALO BRANCO SELECIONADO':
+                    image = self.imagem_cavalo_branco_escolhido
+                elif self.tabuleiro.posicao_ocupada(linha, coluna) == 'CAVALO PRETO':
+                    image = self.imagem_cavalo_preto
+                elif self.tabuleiro.posicao_ocupada(linha, coluna) == 'CAVALO PRETO SELECIONADO':
+                    image = self.imagem_cavalo_preto_escolhido
+                elif self.tabuleiro.posicao_bloqueada(linha, coluna) and self.tabuleiro.posicao_ocupada(linha, coluna) == '':
+                    image = self.imagem_vermelho
                 else:
-                    if self.tabuleiro.posicoes[linha][coluna].ocupada == 'CAVALO BRANCO':
-                        image = 'cavalo-branco.png'
-                    if self.tabuleiro.posicoes[linha][coluna].ocupada == 'CAVALO BRANCO SELECIONADO':
-                        image = 'cavalo-branco-escolhido.png'
-                    elif self.tabuleiro.posicoes[linha][coluna].ocupada == 'CAVALO PRETO':
-                        image = 'cavalo-preto.png'
-                    elif self.tabuleiro.posicoes[linha][coluna].ocupada == 'CAVALO PRETO SELECIONADO':
-                        image = 'ccavalo-preto-escolhido.png'
-                    else:
-                        image = 'verde.png'
+                    image = self.imagem_verde
 
-                self.temp_labels_tabuleiro.append(PhotoImage(file=os.path.join(path, "images", image)))
-                self.labels_tabuleiro[linha][coluna]["image"] = self.temp_labels_tabuleiro[len(self.temp_labels_tabuleiro) - 1]
+                self.temp_labels_tabuleiro.append(image)
+                self.labels_tabuleiro[linha][coluna]['image'] = self.temp_labels_tabuleiro[-1]
