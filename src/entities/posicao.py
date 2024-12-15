@@ -30,12 +30,7 @@ class Posicao():
         self._ocupada = ocupada
 
     def posicao_alcancavel(self, posicao_destino) -> bool:
-        """
-            Retorna se é possível o jogador se movimentar para a posição selecionada.
-
-            :param posicao_destino: Posição destino selecionada pelo jogador.
-            :return: Booleano indicando se a posição é alcançável.
-        """
+        
         dx = abs(self.get_x() - posicao_destino.get_x())
         dy = abs(self.get_y() - posicao_destino.get_y())
 

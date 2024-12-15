@@ -18,9 +18,6 @@ class Jogador():
     def set_cor(self, cor: str) -> None:
         self._cor = cor
 
-    def get_tabuleiro(self) -> str:
-        return self._tabuleiro
-
     def get_posicao_atual(self):
         return self._posicao_atual
 

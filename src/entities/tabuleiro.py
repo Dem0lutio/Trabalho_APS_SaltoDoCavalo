@@ -16,18 +16,22 @@ class Tabuleiro():
                 coluna_posicoes.append(Posicao(linha, coluna))
             self._posicoes.append(coluna_posicoes)
 
-    def get_posicoes(self):
+    def get_posicoes(self) -> list[Posicao]:
         return self._posicoes
 
-    def get_status_partida(self):
+    def get_status_partida(self) -> str:
         return self._status_partida
 
-    def set_status_partida(self, status_partida: str):
+    def set_status_partida(self, status_partida: str) -> None:
         self._status_partida = status_partida
 
     def iniciar_partida(self, jogadores: list[str]) -> None:
         self._jogador_local.set_nome(jogadores[0][0])
         self._jogador_remoto.set_nome(jogadores[1][0])
+
+        if self.get_status_partida() == 'PARTIDA FINALIZADA':
+            self._jogador_local.set_turno(False)
+            self._jogador_remoto.set_turno(False)
 
         if jogadores[0][2] == '1':
             self._jogador_local.set_cor('BRANCO')
@@ -149,7 +153,7 @@ class Tabuleiro():
 
         return movimentos_possiveis
 
-    def verifica_vencedor(self):
+    def verifica_vencedor(self) -> bool:
         if not self.movimentos_possiveis(self._jogador_local):
             self._jogador_remoto.set_vencedor(True)
             return True
