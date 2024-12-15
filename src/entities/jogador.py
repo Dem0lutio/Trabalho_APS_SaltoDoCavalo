@@ -66,3 +66,4 @@ class Jogador():
                     movimentos_possiveis.append(posicao_destino)
 
         return movimentos_possiveis
+    
