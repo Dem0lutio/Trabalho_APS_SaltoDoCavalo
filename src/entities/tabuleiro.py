@@ -162,6 +162,9 @@ class Tabuleiro():
             return True
 
         return False
+    
+    def receber_abandono_partida(self):
+        self._status_partida = 'PARTIDA ABANDONADA'
 
     def posicao_bloqueada(self, linha: int, coluna: int) -> bool:
         return self._posicoes[linha][coluna].get_bloqueada()

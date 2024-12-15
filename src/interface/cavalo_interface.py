@@ -110,7 +110,10 @@ class CavaloInterface(DogPlayerInterface):
         self.atualizar_interface()
 
     def receive_withdrawal_notification(self):
-        print("Oponente desistiu da partida. Jogo encerrado.")
+        self.tabuleiro.receber_abandono_partida()
+        message = 'A partida foi abandonada pelo oponente!'
+        messagebox.showinfo(title='Partida encerrada!', message=message)
+        self.atualizar_interface()
 
     def notificacao(self, mensagem: str):
         messagebox.showinfo(message=mensagem)
@@ -120,7 +123,9 @@ class CavaloInterface(DogPlayerInterface):
             self.label_mensagem['text'] = 'Aguardando início de partida...'
         elif self.tabuleiro.get_status_partida() == 'PARTIDA FINALIZADA':
             vencedor = self.tabuleiro.get_jogador_atual().get_nome() if self.tabuleiro.get_jogador_atual().get_vencedor() else self.tabuleiro.get_jogador_espera().get_nome()
-            self.label_mensagem['text'] = f'FIM DE JOGO! [{vencedor}] venceu.'
+            self.label_mensagem['text'] = f'Partida encerrada! [{vencedor}] venceu.'
+        elif self.tabuleiro.get_status_partida() == 'PARTIDA ABANDONADA':
+            self.label_mensagem['text'] = 'Partida encerrada! O oponente abandonou a partida'
         else:
             jogador_atual = self.tabuleiro.get_jogador_atual()
             cor = jogador_atual.get_cor()
