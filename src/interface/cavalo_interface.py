@@ -120,9 +120,10 @@ class CavaloInterface(DogPlayerInterface):
         if self.tabuleiro.status_partida == 'PARTIDA NAO INICIADA':
             self.label_mensagem['text'] = 'Aguardando início de partida...'
         elif self.tabuleiro.status_partida == 'PARTIDA FINALIZADA':
-            self.label_mensagem['text'] = 'A partida acabou.'
+            messagebox.showinfo(message='FIM DE JOGO!')
+            self.label_mensagem['text'] = f'FIM DE JOGO! [{self.tabuleiro.get_jogador_atual().nome}] venceu.' if self.tabuleiro.get_jogador_atual().vencedor else f'FIM DE JOGO! [{self.tabuleiro.get_jogador_espera().nome}] venceu' 
         else:
-            self.label_mensagem['text'] = 'Vez do Cavalo Branco' if self.tabuleiro.get_jogador_atual().cor == 'BRANCO' else 'Vez do Cavalo Preto' 
+            self.label_mensagem['text'] = f'Vez do Cavalo Branco [{self.tabuleiro.get_jogador_atual().nome}]' if self.tabuleiro.get_jogador_atual().cor == 'BRANCO' else f'Vez do Cavalo Preto [{self.tabuleiro.get_jogador_atual().nome}]' 
 
         self.temp_labels_tabuleiro = []
         for linha in range(5):

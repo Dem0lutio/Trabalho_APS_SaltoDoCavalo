@@ -8,8 +8,8 @@ class Tabuleiro():
         self._posicoes = []
         self._status_partida = 'PARTIDA NAO INICIADA'
         self._interface = interface
-        self._jogador_local = Jogador(self)
-        self._jogador_remoto = Jogador(self)
+        self._jogador_local = Jogador()
+        self._jogador_remoto = Jogador()
 
         for linha in range(5):
             coluna_posicoes = []
@@ -93,9 +93,9 @@ class Tabuleiro():
         posicao_origem = jogador_atual.posicao_atual
         posicao_destino = posicao_selecionada
 
-        if not self.posicao_bloqueada(posicao_destino.x, posicao_destino.y):
+        if not posicao_destino.bloqueada:
 
-            if posicao_destino.posicao_alcancavel(posicao_origem, posicao_destino):
+            if posicao_origem.posicao_alcancavel(posicao_destino):
                 jogada = {'linha_origem': posicao_origem.x,
                           'coluna_origem': posicao_origem.y,
                           'linha_destino': posicao_destino.x,
@@ -136,12 +136,34 @@ class Tabuleiro():
             self.selecionar_posicao_origem(self.posicoes[jogada['linha_origem']][jogada['coluna_origem']])
             self.selecionar_posicao_destino(self.posicoes[jogada['linha_destino']][jogada['coluna_destino']])
 
+    def movimentos_possiveis(self, jogador: Jogador) -> list:
+        movimentos_possiveis = []
+        movimentos_cavalo = [[2, 1], [2, -1], [-2, 1], [-2, -1], 
+                             [1, 2], [1, -2], [-1, 2], [-1, -2]]
+
+        for dx, dy in movimentos_cavalo:
+            novo_x = jogador.posicao_atual.x + dx
+            novo_y = jogador.posicao_atual.y + dy
+
+            if 0 <= novo_x <= 4 and 0 <= novo_y <= 4:
+                posicao_destino = self._posicoes[novo_x][novo_y]
+
+                if not posicao_destino.bloqueada:
+                    movimentos_possiveis.append(posicao_destino)
+
+        return movimentos_possiveis
+
     def verifica_vencedor(self):
-        if self._jogador_local.turno:
-            return True if not self._jogador_local.movimentos_possiveis() else False
-        else:
-            return True if not self._jogador_remoto.movimentos_possiveis() else False
-            
+
+        if not self.movimentos_possiveis(self._jogador_local):
+            self._jogador_remoto.vencedor = True
+            return True
+        if not self.movimentos_possiveis(self._jogador_remoto):
+            self._jogador_local.vencedor = True
+            return True
+
+        return False
+    
     def posicao_bloqueada(self, linha: int, coluna: int) -> bool:
         return self._posicoes[linha][coluna].bloqueada
     
@@ -150,3 +172,6 @@ class Tabuleiro():
     
     def get_jogador_atual(self) -> Jogador:
         return self._jogador_local if self._jogador_local.turno else self._jogador_remoto
+    
+    def get_jogador_espera(self) -> Jogador:
+        return self._jogador_remoto if self._jogador_local.turno else self._jogador_local
