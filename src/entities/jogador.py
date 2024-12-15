@@ -1,8 +1,7 @@
 class Jogador():
-    def __init__(self, tabuleiro):
+    def __init__(self):
         self._nome = ''
         self._cor = ''
-        self._tabuleiro = tabuleiro
         self._posicao_atual = None
         self._vencedor = False
         self._turno = False
