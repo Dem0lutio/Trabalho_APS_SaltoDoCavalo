@@ -80,7 +80,7 @@ class CavaloInterface(DogPlayerInterface):
                 self.dog_server_interface.send_move(movimento)
 
     def iniciar_partida(self):
-        if self.tabuleiro.get_status_partida() in ('PARTIDA NAO INICIADA', 'PARTIDA FINALIZADA'):
+        if self.tabuleiro.get_status_partida() in ('PARTIDA NAO INICIADA', 'PARTIDA FINALIZADA', 'PARTIDA ABANDONADA'):
             start_status = self.dog_server_interface.start_match(2)
             code = start_status.get_code()
             message = start_status.get_message()
