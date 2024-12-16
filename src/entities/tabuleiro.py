@@ -98,7 +98,7 @@ class Tabuleiro():
                     'coluna_origem': posicao_origem.get_y(),
                     'linha_destino': posicao_destino.get_x(),
                     'coluna_destino': posicao_destino.get_y(),
-                    'tipo': 'jogada'
+                    'tipo': 'jogada regular'
                 }
 
                 if jogador_atual.get_cor() == 'BRANCO':
@@ -132,7 +132,7 @@ class Tabuleiro():
             self._interface.notificacao('A posição escolhida está bloqueada!')
     
     def receber_jogada(self, jogada: Dict) -> None:
-        if jogada['tipo'] == "jogada":
+        if jogada['tipo'] == 'jogada regular':
             self.selecionar_posicao_origem(self.get_posicoes()[jogada['linha_origem']][jogada['coluna_origem']])
             self.selecionar_posicao_destino(self.get_posicoes()[jogada['linha_destino']][jogada['coluna_destino']])
     
